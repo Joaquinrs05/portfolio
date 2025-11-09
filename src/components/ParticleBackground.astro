@@ -1,0 +1,133 @@
+---
+---
+
+<div class="particle-background" aria-hidden="true">
+  <canvas id="particle-canvas"></canvas>
+</div>
+
+<style>
+  .particle-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.25), transparent 45%),
+      radial-gradient(circle at 80% 0%, rgba(37, 99, 235, 0.3), transparent 40%),
+      radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.25), transparent 50%);
+  }
+
+  .particle-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.75) 0%, rgba(10, 10, 10, 0.4) 50%, rgba(10, 10, 10, 0.8) 100%);
+  }
+
+  #particle-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    if (typeof window === 'undefined') return;
+
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+
+    const config = {
+      linkDistance: 190,
+      baseSpeed: 0.35,
+    };
+
+    const resizeCanvas = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const createParticles = () => {
+      const count = window.innerWidth < 768 ? 70 : 160;
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * config.baseSpeed,
+        vy: (Math.random() - 0.5) * config.baseSpeed,
+        radius: Math.random() * 1.8 + 0.8,
+        opacity: Math.random() * 0.5 + 0.35,
+      }));
+    };
+
+    const draw = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x <= 0 || particle.x >= width) particle.vx *= -1;
+        if (particle.y <= 0 || particle.y >= height) particle.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+        ctx.shadowColor = 'rgba(59, 130, 246, 0.45)';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      for (let i = 0; i < particles.length; i += 1) {
+        for (let j = i + 1; j < particles.length; j += 1) {
+          const a = particles[i];
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance < config.linkDistance) {
+            const alpha = 1 - distance / config.linkDistance;
+            ctx.strokeStyle = `rgba(59, 130, 246, ${alpha * 0.6})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationId = requestAnimationFrame(draw);
+    };
+
+    const init = () => {
+      resizeCanvas();
+      createParticles();
+      cancelAnimationFrame(animationId);
+      draw();
+    };
+
+    const handleResize = () => {
+      resizeCanvas();
+      createParticles();
+    };
+
+    window.addEventListener('resize', handleResize);
+    init();
+
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+    });
+  })();
+</script>
