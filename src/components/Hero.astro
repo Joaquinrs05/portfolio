@@ -1,14 +1,86 @@
 ---
+import { getLatestCommit } from '../utils/github';
+
+const lastCommit = await getLatestCommit();
+const commitMessage = lastCommit.message.split('\n')[0].substring(0, 50);
 ---
 
 <section class="hero">
-  <div class="container">
-    <div class="hero-content">
-      <p class="hero-kicker">Frontend · UI · Experiencias inmersivas</p>
-      <h1>Joaquin Rodriguez</h1>
-      <p>
-        Desarrollador web especializado en crear experiencias personalizadas para cada usuario.
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="hero-chip">
+        <span class="type-line" data-type-line data-type-speed="18">~/builds/portfolio</span>
+        <span class="blink">▹</span>
       </p>
+      <h1 class="type-line" data-type-line data-type-speed="22">Joaquín Rodriguez</h1>
+      <p class="type-line" data-type-line data-type-speed="18">
+        Frontend engineer que mezcla diseño funcional con obsesión por el código limpio. Me gusta
+        convertir ideas complejas en productos que se sienten rápidos, accesibles y con personalidad.
+      </p>
+
+      <div class="hero-tags">
+        <span>TypeScript</span>
+        <span>Astro</span>
+        <span>React</span>
+        <span>Three.js</span>
+        <span>UX Engineering</span>
+      </div>
+
+      <div class="hero-meta">
+        <div>
+          <span class="label">Focus actual</span>
+          <strong>Experiencias web 3D · Microinteracciones</strong>
+        </div>
+        <div>
+          <span class="label">Status</span>
+          <strong>Disponible para colaborar</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-panel">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="led red"></span>
+          <span class="led yellow"></span>
+          <span class="led green"></span>
+          <span class="terminal-title">devshell — zsh</span>
+        </div>
+        <div class="terminal-body">
+          <pre><code>const joaquin = &#123;
+  role: "Frontend Engineer",
+  stack: ["Astro", "React", "GLSL", "Node"],
+  values: ["detalle", "performance", "DX"],
+  currentlyBuilding: "interfaces que se sienten vivas",
+&#125;;
+
+deploy(joaquin)
+  .with("ideas claras")
+  .and("código honesto");</code></pre>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <div>
+          <span class="label">Último commit</span>
+          <a href={lastCommit.url} target="_blank" rel="noopener noreferrer" class="commit-link">
+            <strong title={lastCommit.message}>{commitMessage}</strong>
+            <span class="commit-meta">
+              <span class="commit-repo">{lastCommit.repo}</span>
+              <span class="commit-date">{new Date(lastCommit.date).toLocaleDateString('es-ES', { 
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</span>
+            </span>
+          </a>
+        </div>
+        <div>
+          <span class="label">Zona horaria</span>
+          <strong>GMT-3</strong>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -18,44 +90,263 @@
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 4rem 0;
+    padding: clamp(3rem, 8vw, 6rem) 0;
+    position: relative;
+    overflow: hidden;
     opacity: 0;
     animation: fadeInUp 1s ease forwards;
+    background: radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.22), transparent 50%),
+      radial-gradient(circle at 80% 0%, rgba(34, 197, 94, 0.18), transparent 40%),
+      linear-gradient(120deg, #01040d 0%, #020617 60%, #01040d 100%);
   }
 
-  .hero-content {
-    padding: clamp(2rem, 4vw, 4rem);
-    border-radius: 32px;
-    background: rgba(10, 10, 10, 0.65);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-    max-width: 850px;
+  .hero::before,
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  .hero-kicker {
-    text-transform: uppercase;
+  .hero::before {
+    background:
+      linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+      linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    background-size: 140px 140px;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.15));
+    animation: gridShift 22s linear infinite;
+  }
+
+  .hero::after {
+    content: "01001100 01001111 01000100 01000101 01000100 01000101 01010110 00001010 01000001 01010011 01010100 01010010 01001111";
+    font-family: "IBM Plex Mono", "Fira Code", monospace;
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
     letter-spacing: 0.35em;
+    line-height: 2.2;
+    color: rgba(45, 212, 191, 0.09);
+    white-space: pre-wrap;
+    text-transform: uppercase;
+    transform: rotate(-8deg);
+    animation: matrixRain 14s linear infinite;
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: clamp(2rem, 4vw, 4rem);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-copy,
+  .hero-panel {
+    padding: clamp(2rem, 3vw, 3.5rem);
+    border-radius: 28px;
+    background: rgba(10, 10, 10, 0.7);
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-chip {
+    font-family: "IBM Plex Mono", "Fira Code", monospace;
+    letter-spacing: 0.08em;
     font-size: 0.85rem;
     color: var(--accent);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
   }
 
-  .hero-content h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 700;
+  .blink {
+    animation: blink 1.2s steps(2) infinite;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.8rem, 6vw, 4.8rem);
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+    background: linear-gradient(120deg, var(--text-primary), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .hero-content p {
-    font-size: clamp(1.1rem, 2vw, 1.5rem);
+  .hero-copy p {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
     color: var(--text-secondary);
-    max-width: 600px;
     line-height: 1.8;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-copy .hero-tags,
+  .hero-copy .hero-meta {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .hero-copy.ready .hero-tags,
+  .hero-copy.ready .hero-meta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-tags span {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+  }
+
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .hero-meta .label,
+  .panel-footer .label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(226, 232, 240, 0.65);
+  }
+
+  .hero-meta strong,
+  .panel-footer strong {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+  }
+
+  .commit-link {
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s ease;
+  }
+
+  .commit-link:hover {
+    opacity: 0.8;
+  }
+
+  .commit-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: rgba(226, 232, 240, 0.5);
+    margin-top: 0.25rem;
+  }
+
+  .commit-repo {
+    color: var(--accent);
+  }
+
+  .commit-date {
+    color: rgba(226, 232, 240, 0.5);
+  }
+
+  .hero-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .terminal {
+    background: rgba(17, 24, 39, 0.9);
+    border-radius: 22px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    overflow: hidden;
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    font-family: "IBM Plex Mono", "Fira Code", monospace;
+    font-size: 0.9rem;
+    color: rgba(226, 232, 240, 0.7);
+  }
+
+  .terminal-title {
+    margin-left: auto;
+  }
+
+  .led {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .led.red {
+    background: #ef4444;
+  }
+
+  .led.yellow {
+    background: #fbbf24;
+  }
+
+  .led.green {
+    background: #22c55e;
+  }
+
+  .terminal-body {
+    padding: 1.75rem;
+    font-family: "IBM Plex Mono", "Fira Code", monospace;
+    font-size: 0.95rem;
+    color: rgb(203, 213, 225);
+    background-image: radial-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .panel-footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(94, 234, 212, 0.15);
+  }
+
+  [data-type-line] {
+    position: relative;
+    white-space: pre-wrap;
+  }
+
+  .typing-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-left: 3px;
+    background: var(--accent);
+    animation: caret 0.9s steps(2) infinite;
+    vertical-align: baseline;
+  }
+
+  .typing-caret.is-hidden {
+    opacity: 0;
+    animation: none;
   }
 
   @keyframes fadeInUp {
@@ -68,4 +359,52 @@
       transform: translateY(0);
     }
   }
+
+  @keyframes gridShift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-120px, -120px, 0);
+    }
+  }
+
+  @keyframes matrixRain {
+    0% {
+      transform: translateY(-20%) rotate(-8deg);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(5%) rotate(-8deg);
+      opacity: 0.75;
+    }
+    100% {
+      transform: translateY(25%) rotate(-8deg);
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes caret {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
 </style>
+
+
