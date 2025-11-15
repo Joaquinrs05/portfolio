@@ -71,11 +71,20 @@ const { projects } = Astro.props;
   .projects {
     min-height: auto;
     padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .projects::before,
+  .projects::after {
+    display: none;
   }
 
   .container {
     max-width: 100%;
     padding: 0;
+    position: relative;
+    z-index: 1;
   }
 
   .section-title {
@@ -220,6 +229,30 @@ const { projects } = Astro.props;
     to {
       opacity: 1;
       transform: translateX(0);
+    }
+  }
+
+  @keyframes gridShift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-120px, -120px, 0);
+    }
+  }
+
+  @keyframes matrixRain {
+    0% {
+      transform: translateY(-20%) rotate(-8deg);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(5%) rotate(-8deg);
+      opacity: 0.75;
+    }
+    100% {
+      transform: translateY(25%) rotate(-8deg);
+      opacity: 0.2;
     }
   }
 

@@ -16,7 +16,14 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--bg-primary);
+  background: radial-gradient(
+      circle at 15% 20%,
+      rgba(14, 165, 233, 0.22),
+      transparent 50%
+    ),
+    radial-gradient(circle at 80% 0%, rgba(34, 197, 94, 0.18), transparent 40%),
+    linear-gradient(120deg, #01040d 0%, #020617 60%, #01040d 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
@@ -25,13 +32,48 @@ body {
   color-scheme: dark;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 140px 140px;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.15));
+  animation: gridShift 22s linear infinite;
+}
+
+body::after {
+  content: '01001100 01001111 01000100 01000101 01000100 01000101 01010110 00001010 01000001 01010011 01010100 01010010 01001111';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  letter-spacing: 0.35em;
+  line-height: 2.2;
+  color: rgba(45, 212, 191, 0.09);
+  white-space: pre-wrap;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  animation: matrixRain 14s linear infinite;
+}
+
 main {
   position: relative;
-  z-index: 0;
+  z-index: 1;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -43,6 +85,7 @@ section {
   padding: 4rem 0;
   position: relative;
   z-index: 1;
+  background: transparent;
 }
 
 /* Smooth scroll */
@@ -54,5 +97,29 @@ html {
   section {
     min-height: auto;
     padding: 3rem 0;
+  }
+}
+
+@keyframes gridShift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-120px, -120px, 0);
+  }
+}
+
+@keyframes matrixRain {
+  0% {
+    transform: translateY(-20%) rotate(-8deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(5%) rotate(-8deg);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(25%) rotate(-8deg);
+    opacity: 0.2;
   }
 }

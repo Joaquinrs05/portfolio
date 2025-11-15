@@ -2,38 +2,70 @@
 ---
 
 <section class="contact">
-  <div class="container">
-    <div style="width: 100%;">
-      <h2 class="section-title">Contacto</h2>
-      <form class="contact-form">
-        <div class="form-group">
-          <label for="name">Nombre</label>
-          <input type="text" id="name" name="name" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
-        </div>
-        <div class="form-group">
-          <label for="message">Mensaje / Propuesta</label>
-          <textarea id="message" name="message" required></textarea>
-        </div>
-        <div class="form-group">
-          <button type="submit" class="submit-btn">Enviar</button>
-        </div>
-      </form>
+  <h2 class="section-title">Contacto</h2>
+  <form class="contact-form" id="contactForm" method="POST" action="https://formsubmit.co/joaquinrs134@gmail.com">
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input type="text" id="name" name="name" required />
     </div>
-  </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+    </div>
+    <div class="form-group">
+      <label for="message">Mensaje / Propuesta</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="submit-btn" id="submitBtn">Enviar</button>
+    </div>
+    <div id="formMessage" class="form-message"></div>
+  </form>
 </section>
 
 <script>
-  const form = document.querySelector('.contact-form');
-  if (form) {
-    form.addEventListener('submit', (e) => {
+  const form = document.getElementById('contactForm') as HTMLFormElement;
+  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+  const formMessage = document.getElementById('formMessage') as HTMLDivElement;
+
+  if (form && submitBtn && formMessage) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Aquí puedes añadir la lógica para enviar el formulario
-      // Por ejemplo, usando Formspree, EmailJS, o tu propio backend
-      alert('Formulario enviado. Conecta con tu servicio de email preferido.');
+      
+      // Deshabilitar el botón durante el envío
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      formMessage.textContent = '';
+      formMessage.className = 'form-message';
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          formMessage.textContent = '✓ Mensaje enviado correctamente. Te contactaré pronto.';
+          formMessage.classList.add('success');
+          form.reset();
+          submitBtn.textContent = 'Enviar';
+        } else {
+          formMessage.textContent = '✗ Error al enviar el mensaje. Intenta de nuevo.';
+          formMessage.classList.add('error');
+          submitBtn.textContent = 'Enviar';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        formMessage.textContent = '✗ Error al enviar el mensaje. Intenta de nuevo.';
+        formMessage.classList.add('error');
+        submitBtn.textContent = 'Enviar';
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
   }
 </script>
@@ -41,7 +73,17 @@
 <style>
   .contact {
     min-height: auto;
-    padding: 6rem 0;
+    padding: 8rem 2rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact::before,
+  .contact::after {
+    display: none;
   }
 
   .section-title {
@@ -62,12 +104,13 @@
   }
 
   .contact-form {
-    max-width: 600px;
+    width: 100%;
+    max-width: 60%;
     margin: 3rem auto 0;
   }
 
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     opacity: 0;
     animation: fadeInUp 0.8s ease forwards;
   }
@@ -78,23 +121,25 @@
 
   .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: 600;
   }
 
   .form-group input,
   .form-group textarea {
     width: 100%;
-    padding: 1rem;
+    padding: 1.25rem 1.5rem;
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: 12px;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.1rem;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: inherit;
   }
 
   .form-group input:focus,
@@ -105,32 +150,56 @@
   }
 
   .form-group textarea {
-    min-height: 150px;
+    min-height: 250px;
     resize: vertical;
   }
 
   .submit-btn {
     width: 100%;
-    padding: 1rem 2rem;
+    padding: 1.5rem 2.5rem;
     background: var(--accent);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    margin-top: 1rem;
   }
 
   .submit-btn:hover {
     background: var(--accent-hover);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
 
   .submit-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
+  }
+
+  .form-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    min-height: 20px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .form-message.success {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #22c55e;
+  }
+
+  .form-message.error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
   }
 
   @keyframes fadeInUp {
@@ -144,9 +213,49 @@
     }
   }
 
+  @keyframes gridShift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-120px, -120px, 0);
+    }
+  }
+
+  @keyframes matrixRain {
+    0% {
+      transform: translateY(-20%) rotate(-8deg);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(5%) rotate(-8deg);
+      opacity: 0.75;
+    }
+    100% {
+      transform: translateY(25%) rotate(-8deg);
+      opacity: 0.2;
+    }
+  }
+
   @media (max-width: 768px) {
     .contact {
-      padding: 3rem 0;
+      padding: 4rem 0;
+    }
+
+    .contact-form {
+      max-width: 100%;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group textarea {
+      min-height: 200px;
+    }
+
+    .section-title {
+      margin-bottom: 2rem;
     }
   }
 </style>
